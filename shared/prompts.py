@@ -1,43 +1,43 @@
 """
-Prompt templates for the agent.
+Agent 的提示词模板。
 
-These functions build prompts that evolve across lessons:
-- Lesson 01: base_prompt (just text)
-- Lesson 02: system_prompt (add role)
-- Lesson 03: json_contract (add structure)
-- Lesson 04+: specialized prompts for decisions, tools, planning
+这些函数构建的提示词在各课程中逐步演进：
+- 第 01 课：base_prompt（仅文本）
+- 第 02 课：system_prompt（添加角色）
+- 第 03 课：json_contract（添加结构化）
+- 第 04 课及以上：用于决策、工具调用、规划的专用提示词
 
-Prompts are first-class citizens in agent systems.
+提示词是 Agent 系统中的一等公民。
 """
 
 
 def base_prompt(user_input: str) -> str:
     """
-    The simplest possible prompt - just the user's text.
-    
-    Used in: Lesson 01
-    
-    Args:
-        user_input: The user's question or request
-        
-    Returns:
-        Unmodified user input
+    最简单的提示词——仅包含用户文本。
+
+    用于：第 01 课
+
+    参数：
+        user_input: 用户的问题或请求
+
+    返回值：
+        未经修改的用户输入
     """
     return user_input
 
 
 def system_prompt(role: str, user_input: str) -> str:
     """
-    Add a system role to shape behavior.
-    
-    Used in: Lesson 02
-    
-    Args:
-        role: Description of the assistant's role and behavior
-        user_input: The user's question or request
-        
-    Returns:
-        Formatted prompt with system and user sections
+    添加系统角色以塑造行为。
+
+    用于：第 02 课
+
+    参数：
+        role: 助手角色和行为的描述
+        user_input: 用户的问题或请求
+
+    返回值：
+        包含系统和用户部分的格式化提示词
     """
     return f"""<SYSTEM>
 {role}
@@ -50,16 +50,16 @@ def system_prompt(role: str, user_input: str) -> str:
 
 def json_contract(schema: str, content: str) -> str:
     """
-    Enforce structured JSON output.
-    
-    Used in: Lesson 03
-    
-    Args:
-        schema: JSON schema description
-        content: The content to process
-        
-    Returns:
-        Prompt that enforces JSON output
+    强制结构化 JSON 输出。
+
+    用于：第 03 课
+
+    参数：
+        schema: JSON 模式描述
+        content: 要处理的内容
+
+    返回值：
+        强制 JSON 输出的提示词
     """
     return f"""Return ONLY valid JSON.
 No explanations. No markdown. No extra text.
@@ -73,19 +73,19 @@ Content:
 
 def decision_prompt(choices: list[str], user_input: str) -> str:
     """
-    Make the model choose from a finite set of options.
-    
-    Used in: Lesson 04
-    
-    Args:
-        choices: List of possible actions/decisions
-        user_input: The input to make a decision about
-        
-    Returns:
-        Prompt that enforces decision-making
+    使模型从有限的选项集中进行选择。
+
+    用于：第 04 课
+
+    参数：
+        choices: 可能的操作/决策列表
+        user_input: 需要做出决策的输入
+
+    返回值：
+        强制决策的提示词
     """
     options = "\n".join(f"- {choice}" for choice in choices)
-    
+
     return f"""You must choose ONE of the following options.
 Return ONLY valid JSON.
 
@@ -101,16 +101,16 @@ Input:
 
 def tool_call_prompt(tools: dict, user_input: str) -> str:
     """
-    Request a tool call from the model.
-    
-    Used in: Lesson 05
-    
-    Args:
-        tools: Dictionary of available tools and their schemas
-        user_input: The user's request
-        
-    Returns:
-        Prompt that requests a tool call
+    请求模型发起工具调用。
+
+    用于：第 05 课
+
+    参数：
+        tools: 可用工具及其模式的字典
+        user_input: 用户的请求
+
+    返回值：
+        请求工具调用的提示词
     """
     return f"""You may request ONE tool call.
 
@@ -131,16 +131,16 @@ User request:
 
 def agent_step_prompt(state: dict, user_input: str) -> str:
     """
-    Generate the next agent action based on current state.
-    
-    Used in: Lesson 06
-    
-    Args:
-        state: Current agent state
-        user_input: User's input or system observation
-        
-    Returns:
-        Prompt for agent step execution
+    根据当前状态生成下一个 Agent 操作。
+
+    用于：第 06 课
+
+    参数：
+        state: 当前 Agent 状态
+        user_input: 用户输入或系统观察结果
+
+    返回值：
+        用于 Agent 步骤执行的提示词
     """
     return f"""You are an agent.
 
@@ -163,17 +163,17 @@ User input:
 
 def memory_prompt(state: dict, memory: list, user_input: str) -> str:
     """
-    Agent prompt with memory context.
-    
-    Used in: Lesson 07
-    
-    Args:
-        state: Current agent state
-        memory: List of relevant memories
-        user_input: User's input
-        
-    Returns:
-        Prompt with memory context
+    带有记忆上下文的 Agent 提示词。
+
+    用于：第 07 课
+
+    参数：
+        state: 当前 Agent 状态
+        memory: 相关记忆列表
+        user_input: 用户输入
+
+    返回值：
+        带有记忆上下文的提示词
     """
     return f"""You are an agent with memory.
 
@@ -199,15 +199,15 @@ User input:
 
 def planning_prompt(goal: str) -> str:
     """
-    Generate a plan to achieve a goal.
-    
-    Used in: Lesson 08
-    
-    Args:
-        goal: The goal to achieve
-        
-    Returns:
-        Prompt for plan generation
+    生成实现目标的计划。
+
+    用于：第 08 课
+
+    参数：
+        goal: 要实现的目标
+
+    返回值：
+        用于计划生成的提示词
     """
     return f"""Create a step-by-step plan to achieve the goal.
 
@@ -224,15 +224,15 @@ Goal:
 
 def atomic_action_prompt(step: str) -> str:
     """
-    Convert a plan step into an atomic action.
-    
-    Used in: Lesson 09
-    
-    Args:
-        step: A step from a plan
-        
-    Returns:
-        Prompt to generate atomic action
+    将计划步骤转换为原子操作。
+
+    用于：第 09 课
+
+    参数：
+        step: 计划中的一个步骤
+
+    返回值：
+        生成原子操作的提示词
     """
     return f"""Convert this step into an atomic action.
 
@@ -250,15 +250,15 @@ Step:
 
 def aot_prompt(goal: str) -> str:
     """
-    Generate an Atom of Thought execution graph.
-    
-    Used in: Lesson 10
-    
-    Args:
-        goal: The goal to achieve
-        
-    Returns:
-        Prompt for AoT graph generation
+    生成 Atom of Thought 执行图。
+
+    用于：第 10 课
+
+    参数：
+        goal: 要实现的目标
+
+    返回值：
+        用于 AoT 图生成的提示词
     """
     return f"""Create an atomic execution graph for the goal.
 

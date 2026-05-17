@@ -1,58 +1,58 @@
-# Lesson 12 - Telemetry (Runtime Observability)
+# 第 12 课 - Telemetry（运行时可观测性）
 
-## What Question Are We Answering?
+## 我们要回答什么问题？
 
-**"What is my agent actually doing at runtime?"**
+**"我的 Agent 在运行时到底在做什么？"**
 
-Evals tell you if the agent works before deployment. Telemetry tells you what's happening during deployment. Without telemetry, debugging is guesswork.
+Evals 告诉你 Agent 在部署前是否工作。Telemetry 告诉你在部署期间发生了什么。没有 telemetry，调试就是靠猜。
 
-## What You Will Build
+## 你将构建什么
 
-A telemetry system that:
-- Logs every LLM call with inputs and outputs
-- Tracks tool call success/failure rates
-- Measures latency and retry counts
-- Enables post-hoc debugging with traces
+一个 telemetry 系统，具备以下功能：
+- 记录每个 LLM 调用的输入和输出
+- 跟踪工具调用的成功/失败率
+- 测量延迟和重试次数
+- 通过 traces 实现事后调试
 
-## New Concepts Introduced
+## 引入的新概念
 
-### 1. Structured Logging
+### 1. 结构化日志
 
-**Structured logging** means JSON logs, not print statements. Every log entry has a consistent schema: timestamp, event type, data, error.
+**结构化日志**意味着 JSON 日志，而不是 print 语句。每个日志条目有统一的模式：时间戳、事件类型、数据、错误。
 
 ```json
 {"event_type": "llm_call", "timestamp": "2024-01-15T10:30:00", "duration_ms": 1523, "success": true}
 ```
 
-This is searchable, parseable, and machine-readable.
+这是可搜索的、可解析的、机器可读的。
 
-### 2. Spans and Traces
+### 2. Span 和 Trace
 
-A **span** is one operation - a single LLM call, one tool execution, one memory access.
+一个 **span** 是一个操作——一个单独的 LLM 调用、一次工具执行、一次记忆访问。
 
-A **trace** is a full agent interaction - multiple spans linked together by a trace ID.
+一个 **trace** 是一次完整的 Agent 交互——由 trace ID 关联的多个 span 链接在一起。
 
-When something fails, you find the trace and see exactly what happened step by step.
+当某件事失败时，你找到那个 trace，逐步看到到底发生了什么。
 
-### 3. Metrics
+### 3. 指标
 
-**Metrics** are aggregated numbers:
-- `llm_success_rate` - How often does JSON parse correctly?
-- `avg_latency_ms` - How long do LLM calls take?
-- `tool_failure_rate` - How often do tool calls fail?
+**指标**是聚合的数字：
+- `llm_success_rate`——JSON 解析正确的频率是多少？
+- `avg_latency_ms`——LLM 调用需要多长时间？
+- `tool_failure_rate`——工具调用失败的频率是多少？
 
-Metrics tell you the health of your agent at a glance.
+指标让你一目了然地了解 Agent 的健康状况。
 
-## What We Are NOT Doing (Yet)
+## 我们（目前）不做什么
 
-- No distributed tracing (single machine only)
-- No production dashboards (file-based logging)
-- No alerting (manual inspection)
-- No OpenTelemetry (keeping it simple)
+- 没有分布式追踪（仅限单机）
+- 没有生产仪表盘（基于文件的日志记录）
+- 没有告警（手动检查）
+- 没有 OpenTelemetry（保持简单）
 
-## The Code
+## 代码
 
-Look at `agent/telemetry.py`:
+查看 `agent/telemetry.py`：
 
 ```python
 import json
@@ -131,15 +131,15 @@ class Telemetry:
             self.metrics.llm_failures += 1
 ```
 
-Notice:
-- **Dataclasses** - Clean, typed structures
-- **JSONL format** - One JSON object per line, easy to parse
-- **Metrics accumulation** - Track aggregates as we go
-- **Trace linking** - All spans share a trace ID
+注意以下几点：
+- **Dataclasses**——清晰、有类型的结构
+- **JSONL 格式**——每行一个 JSON 对象，易于解析
+- **指标累积**——随进程跟踪聚合数据
+- **Trace 链接**——所有 span 共享一个 trace ID
 
-## How to Run
+## 如何运行
 
-Look at `complete_example.py`, see `lesson_12_telemetry()` method:
+查看 `complete_example.py`，参见 `lesson_12_telemetry()` 方法：
 
 ```python
 from agent.agent import Agent
@@ -170,7 +170,7 @@ telemetry.log_llm_call(
 telemetry.print_summary()
 ```
 
-Example output:
+示例输出：
 
 ```
 ========================================
@@ -186,122 +186,122 @@ Memory Ops:     1
 ========================================
 ```
 
-## Viewing the Log File
+## 查看日志文件
 
-The telemetry logs to `agent_telemetry.jsonl`:
+Telemetry 记录到 `agent_telemetry.jsonl`：
 
 ```jsonl
 {"span_id": "a1b2c3d4", "trace_id": "x9y8z7w6", "event_type": "llm_call", "timestamp": "2024-01-15T10:30:00.123456", "duration_ms": 1523.45, "data": {"prompt_length": 256, "response_length": 89, "success": true}}
 {"span_id": "e5f6g7h8", "trace_id": "x9y8z7w6", "event_type": "tool_call", "timestamp": "2024-01-15T10:30:02.456789", "duration_ms": 5.23, "data": {"tool": "calculator", "arguments": {"a": 42, "b": 7, "operation": "multiply"}}}
 ```
 
-To debug a specific interaction, filter by trace_id:
+要调试某个特定交互，按 `trace_id` 过滤：
 ```bash
 grep "x9y8z7w6" agent_telemetry.jsonl
 ```
 
-## What to Log
+## 应该记录什么
 
-| Event | Data to Capture | Why |
+| 事件 | 要捕获的数据 | 为什么 |
 |-------|-----------------|-----|
-| LLM call | prompt_length, response_length, duration_ms, success | Track latency, identify slow/failing calls |
-| Tool request | tool_name, arguments | Debug wrong tool selection |
-| Tool execution | tool_name, result, error | Debug tool failures |
-| Memory operation | operation, data | Track what's being stored/retrieved |
-| Decision | choices, selected | Debug routing issues |
+| LLM 调用 | prompt_length, response_length, duration_ms, success | 跟踪延迟，识别慢/失败的调用 |
+| 工具请求 | tool_name, arguments | 调试错误的工具选择 |
+| 工具执行 | tool_name, result, error | 调试工具失败 |
+| 记忆操作 | operation, data | 跟踪存储/检索的内容 |
+| 决策 | choices, selected | 调试路由问题 |
 
-## Compare to Lesson 11
+## 与第 11 课对比
 
-**Lesson 11 (Evals):**
-- Run before deployment
-- Known inputs, expected outputs
-- Binary pass/fail
-- Catches regressions
+**第 11 课（Evals）：**
+- 在部署前运行
+- 已知输入，预期输出
+- 二元通过/失败
+- 捕获回归
 
-**Lesson 12 (Telemetry):**
-- Run during deployment
-- Unknown inputs, observed outputs
-- Continuous monitoring
-- Enables debugging
+**第 12 课（Telemetry）：**
+- 在部署期间运行
+- 未知输入，观测到的输出
+- 持续监控
+- 使调试成为可能
 
-They're complementary. Evals prevent bad code from shipping. Telemetry helps you understand what shipped code is doing.
+它们是互补的。Evals 防止有问题的代码被发布。Telemetry 帮助你理解已发布的代码在做什么。
 
-## Key Insights
+## 关键洞察
 
-### Telemetry is Just Structured Logging
+### Telemetry 只是结构化日志
 
-No magic. You're writing JSON to a file. The power is in:
-- Consistent schema
-- Trace IDs linking related events
-- Aggregated metrics
+没有魔法。你在往文件中写 JSON。其强大之处在于：
+- 统一的模式
+- Trace ID 关联相关事件
+- 聚合的指标
 
-### Traces Are Your Debugging Superpower
+### Trace 是你的调试超能力
 
-When a user reports "the agent gave a weird answer", you:
-1. Get the trace ID
-2. Find all spans for that trace
-3. See exactly what happened
+当用户报告"Agent 给出了奇怪的答案"时，你：
+1. 获取 trace ID
+2. 找到该 trace 的所有 span
+3. 看到到底发生了什么
 
-Without traces, you're guessing.
+没有 traces，你只能靠猜。
 
-### Metrics Tell You System Health
+### 指标告诉你系统健康状况
 
-Glance at metrics to know if something's wrong:
-- Success rate dropping? Check for prompt issues
-- Latency increasing? Check model/hardware
-- Retries increasing? Check JSON parsing
+扫一眼指标就知道是否有问题：
+- 成功率在下降？检查 prompt 问题
+- 延迟在增加？检查模型/硬件
+- 重试次数在增加？检查 JSON 解析
 
-### Start Simple, Add More Later
+### 从简单开始，以后再添加
 
-This implementation logs to a file. That's enough to start. Later you might add:
-- Database storage
-- Real-time dashboards
-- Alerting on thresholds
+这个实现记录到文件。这对起步来说足够了。以后你可以添加：
+- 数据库存储
+- 实时仪表盘
+- 阈值告警
 
-But start with a file.
+但从文件开始。
 
-## Common Issues
+## 常见问题
 
-**"The log file is too big"**
-- Rotate logs (new file per day/hour)
-- Only log failures in production
-- Truncate long data fields
+**"日志文件太大"**
+- 轮转日志（按天/小时创建新文件）
+- 在生产中只记录失败
+- 截断较长的数据字段
 
-**"I can't find the trace I need"**
-- Add trace IDs to user-facing errors
-- Log trace IDs in your application logs
-- Consider adding user IDs to traces
+**"我找不到我需要的 trace"**
+- 在面向用户的错误信息中添加 trace ID
+- 在应用日志中记录 trace ID
+- 考虑在 traces 中添加用户 ID
 
-**"Telemetry is slowing down my agent"**
-- Log asynchronously (buffer, then write)
-- Reduce data captured per span
-- Sample instead of logging everything
+**"Telemetry 拖慢了我的 Agent"**
+- 异步记录（先缓冲，再写入）
+- 减少每个 span 捕获的数据
+- 采样而不是记录所有内容
 
-## Exercises
+## 练习
 
-1. Add telemetry to the agent loop and trace a full multi-step interaction
-2. Calculate JSON parse success rate across 20 structured output calls
-3. Compare latency between different prompt lengths
-4. Find a failing span in the logs and debug what went wrong
+1. 将 telemetry 添加到 Agent 循环中，追踪完整的多步骤交互
+2. 计算 20 次结构化输出调用中的 JSON 解析成功率
+3. 比较不同 prompt 长度之间的延迟
+4. 在日志中找到失败的 span 并调试出了什么问题
 
-## What's Next?
+## 接下来是什么？
 
-Congratulations! You've completed the core curriculum.
+恭喜！你已经完成核心课程。
 
-You now have an agent with:
-- Structured outputs (Lesson 03)
-- Decision making (Lesson 04)
-- Tool calling (Lesson 05)
-- Agent loop (Lesson 06)
-- Memory (Lesson 07)
-- Planning (Lesson 08)
-- Atomic actions (Lesson 09)
-- Dependency graphs (Lesson 10)
-- Regression testing (Lesson 11)
-- Runtime observability (Lesson 12)
+你现在拥有一个具备以下能力的 Agent：
+- 结构化输出（第 03 课）
+- 决策能力（第 04 课）
+- 工具调用（第 05 课）
+- Agent 循环（第 06 课）
+- 记忆（第 07 课）
+- 规划（第 08 课）
+- 原子动作（第 09 课）
+- 依赖图（第 10 课）
+- 回归测试（第 11 课）
+- 运行时可观测性（第 12 课）
 
-This is a complete, observable, testable agent built from first principles.
+这是一个从第一性原理构建的完整的、可观测的、可测试的 Agent。
 
 ---
 
-**Key Takeaway:** Telemetry = structured logging + traces + metrics. It turns "something's wrong" into "here's exactly what happened."
+**核心要点：** Telemetry = 结构化日志 + traces + 指标。它将"出了点问题"变成"这是到底发生了什么"。

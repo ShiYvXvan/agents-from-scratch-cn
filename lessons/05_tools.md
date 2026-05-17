@@ -1,52 +1,52 @@
-# Lesson 05  -  Introducing Tools 
+# 第 05 课 - 引入工具
 
-## What Question Are We Answering?
+## 我们在回答什么问题？
 
-**"Can the model ask me to do something?"**
+**"模型能让我做某件事吗？"**
 
-Tools extend the agent's capabilities beyond text generation. Instead of only generating text, the agent can request actions like calculations, API calls, or file operations.
+工具扩展了 agent 的能力，超越了文本生成。agent 不再只能生成文本，而是可以请求执行计算、API 调用或文件操作等动作。
 
-## What You Will Build
+## 你将构建什么
 
-A tool-calling system that:
-- Lets the agent request specific tools with structured parameters
-- Validates tool requests before execution
-- Separates tool requests from tool execution
-- Extends agent capabilities without retraining the model
+一个工具调用系统，它能够：
+- 让 agent 用结构化的参数请求特定工具
+- 在执行之前验证工具请求
+- 将工具请求与工具执行分离
+- 无需重新训练模型即可扩展 agent 的能力
 
-## New Concepts Introduced
+## 引入的新概念
 
-### 1. Tool Interfaces
+### 1. 工具接口
 
-A **tool interface** is a defined API the agent can request. Tools have names and parameters, like `calculator(a, b, operation)`. The agent requests the tool, but the system executes it.
+**工具接口**是 agent 可以请求的已定义的 API。工具有名称和参数，比如 `calculator(a, b, operation)`。agent 请求工具，但由系统来执行它。
 
-This separation is critical - the agent **describes** what it needs, but you **control** what actually happens.
+这种分离至关重要——agent **描述**它需要什么，但你**控制**实际发生什么。
 
-### 2. Structured Tool Calls
+### 2. 结构化的工具调用
 
-Tool calls are **structured JSON specifications** for function calls. The model outputs JSON like `{"tool": "calculator", "arguments": {"a": 42, "b": 7, "operation": "multiply"}}`, and your code validates and executes it.
+工具调用是函数调用的**结构化 JSON 规范**。模型输出 JSON 如 `{"tool": "calculator", "arguments": {"a": 42, "b": 7, "operation": "multiply"}}`，而你的代码负责验证和执行。
 
-This is similar to Lesson 04's decision making, but instead of choosing an action, the agent is specifying a function call.
+这与第 04 课的决策制定类似，但 agent 不是在选择一个动作，而是在指定一个函数调用。
 
-### 3. Model-Chosen Actions
+### 3. 模型选择的动作
 
-The agent decides **which tool to use** and **what parameters to pass**. You define available tools, but the agent chooses which one fits the situation.
+agent 决定**使用哪个工具**以及**传递什么参数**。你定义可用的工具，但 agent 选择哪个适合当前情况。
 
-This is agency at work - the agent is selecting and configuring actions.
+这就是自主性在发挥作用——agent 在选择和配置动作。
 
-## Important Rule
+## 重要规则
 
-The model **requests** tools. The system **executes** them. No autonomy yet. This separation gives you control and safety.
+模型**请求**工具。系统**执行**它们。目前还没有自主权。这种分离为你提供了控制权和安全性。
 
-## What We Are NOT Doing (Yet)
+## 我们（暂时）不做什么
 
-- No agent loop ([Lesson 06](06_agent_loop.md))
-- No memory ([Lesson 07](07_memory.md))
-- No automatic tool execution - you still manually execute tool calls
+- 不使用 agent loop（[第 06 课](06_agent_loop.md)）
+- 不使用记忆（[第 07 课](07_memory.md)）
+- 不自动执行工具——你仍然手动执行工具调用
 
-## The Code
+## 代码
 
-Look at `agent/agent.py`, see `request_tool()` method:
+查看 `agent/agent.py`，找到 `request_tool()` 方法：
 
 ```python
 def request_tool(self, user_input: str) -> dict | None:
@@ -102,15 +102,15 @@ def execute_tool_call(self, tool_call: dict) -> Any:
     return execute_tool(tool_call["tool"], tool_call["arguments"])
 ```
 
-Notice:
-- **Structured output** - The tool call is validated JSON, similar to Lesson 03
-- **Validation** - We check that both "tool" and "arguments" are present
-- **Separation of concerns** - Request and execution are separate methods
-- **Extensibility** - Easy to add new tools without changing the model
+注意：
+- **结构化输出** - 工具调用是经过验证的 JSON，与第 03 课类似
+- **验证** - 我们检查 "tool" 和 "arguments" 是否都存在
+- **关注点分离** - 请求和执行是分开的方法
+- **可扩展性** - 轻松添加新工具而无需更改模型
 
-## How to Run
+## 如何运行
 
-Look at `complete_example.py`, see `lesson_05_tools()` method:
+查看 `complete_example.py`，找到 `lesson_05_tools()` 方法：
 
 ```python
 from agent.agent import Agent
@@ -125,73 +125,73 @@ if tool_call:
     print(f"Tool result: {result}")
 ```
 
-![Tool Calling Flow](diagrams/lesson-05-tool-calling.png)
+![工具调用流程](diagrams/lesson-05-tool-calling.png)
 
-## Compare to Lesson 04
+## 与第 04 课对比
 
-**Lesson 04 (Decision Making):**
+**第 04 课（决策制定）：**
 ```
 Input: "What should I do?"
 Choices: ["answer", "calculate", "translate"]
 Output: "calculate"
 ```
-The agent picks from a list of actions.
+agent 从一个动作列表中进行选择。
 
-**Lesson 05 (Tool Calling):**
+**第 05 课（工具调用）：**
 ```
 Input: "What is 42 * 7?"
 Tool: calculator
 Arguments: {"a": 42, "b": 7, "operation": "multiply"}
 Result: 294
 ```
-The agent specifies a tool call with parameters and gets a result.
+agent 指定带参数的工具调用并获取结果。
 
-## Key Insights
+## 关键洞见
 
-### Tools Are Interfaces, Not Abilities
+### 工具是接口，而不是能力
 
-The agent doesn't have the ability - you do. The agent describes what it needs through a structured interface, and you provide the implementation. This keeps you in control.
+agent 并不拥有这个能力——你才有。agent 通过结构化接口描述它需要什么，而你提供实现。这让你保持控制权。
 
-### No Retraining Required
+### 不需要重新训练
 
-To add new capabilities, you add new tools. The model doesn't need retraining - it just needs to understand the tool interface. This is powerful.
+要添加新的能力，你只需添加新的工具。模型不需要重新训练——它只需要理解工具接口。这非常强大。
 
-### Safety Through Separation
+### 通过分离实现安全性
 
-By separating tool requests from execution, you can validate, log, and control what actually happens. The agent can't execute dangerous operations without your code allowing it.
+通过将工具请求与执行分离，你可以验证、记录和控制实际发生的事。agent 无法在没有你的代码允许的情况下执行危险操作。
 
-### Structured = Reliable
+### 结构化 = 可靠
 
-Using the same structured JSON pattern from Lessons 03 and 04 makes tool calls reliable and parseable. The model outputs structured data, you validate it, then execute.
+使用与第 03 和 04 课相同的结构化 JSON 模式，使工具调用变得可靠且可解析。模型输出结构化数据，你验证它，然后执行。
 
-## Common Issues
+## 常见问题
 
-**"The model requests a tool that doesn't exist"**
-- Validate the tool name against your available tools
-- Provide clear examples of available tools in the prompt
-- Handle invalid tool names gracefully
+**"模型请求了一个不存在的工具"**
+- 对照你可用的工具验证工具名称
+- 在 prompt 中提供可用工具的清晰示例
+- 优雅地处理无效的工具名称
 
-**"The arguments are the wrong type"**
-- Validate argument types before execution
-- Make the expected types clear in the tool description
-- Consider using schema validation for complex tools
+**"参数类型错误"**
+- 在执行之前验证参数类型
+- 在工具描述中明确期望的类型
+- 考虑对复杂工具使用 schema 验证
 
-**"The model doesn't request a tool when it should"**
-- Make it clear when tools should be used
-- Provide examples in the prompt
-- Consider making tool use mandatory for certain request types
+**"模型在应该请求工具的时候没有请求"**
+- 明确说明何时应该使用工具
+- 在 prompt 中提供示例
+- 考虑对某些请求类型强制使用工具
 
-## Exercises
+## 练习
 
-1. Add a new tool (e.g., "weather" or "search") and test it
-2. Try invalid tool calls and see how validation handles them
-3. Modify the tool interface and see how the model adapts
-4. Create tools with different parameter types (strings, numbers, booleans)
+1. 添加一个新工具（例如"weather"或"search"）并测试它
+2. 尝试无效的工具调用，看看验证如何处理它们
+3. 修改工具接口，观察模型如何适应
+4. 创建具有不同参数类型的工具（字符串、数字、布尔值）
 
-## What's Next?
+## 接下来是什么？
 
-In [Lesson 06](06_agent_loop.md), we'll create the **agent loop** - putting decision making and tool calling together into a repeating cycle.
+在[第 06 课](06_agent_loop.md)中，我们将创建 **agent loop**——将决策制定和工具调用组合成一个重复的循环。
 
 ---
 
-**Key Takeaway:** Tool calling = expanding capabilities without retraining. Tools are interfaces you control, not abilities the agent has.
+**核心要点：** 工具调用 = 无需重新训练即可扩展能力。工具是你控制的接口，而不是 agent 拥有的能力。

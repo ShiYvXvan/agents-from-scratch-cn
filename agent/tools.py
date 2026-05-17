@@ -1,8 +1,8 @@
 """
-Tool definitions for the agent.
+Agent 的工具定义。
 
-Tools are APIs, not abilities.
-The agent requests tools; the system executes them.
+工具是 API，不是能力。
+Agent 请求工具；系统执行工具。
 """
 
 from typing import Any
@@ -10,15 +10,15 @@ from typing import Any
 
 def calculator(a: float, b: float, operation: str = "add") -> float:
     """
-    Simple calculator tool.
-    
+    简单的计算器工具。
+
     Args:
-        a: First number
-        b: Second number
-        operation: One of "add", "subtract", "multiply", "divide"
-        
+        a: 第一个数字
+        b: 第二个数字
+        operation: 可选值为 "add"、"subtract"、"multiply"、"divide"
+
     Returns:
-        Result of the operation
+        运算结果
     """
     operations = {
         "add": lambda x, y: x + y,
@@ -26,21 +26,21 @@ def calculator(a: float, b: float, operation: str = "add") -> float:
         "multiply": lambda x, y: x * y,
         "divide": lambda x, y: x / y if y != 0 else float('inf'),
     }
-    
+
     if operation not in operations:
         raise ValueError(f"Unknown operation: {operation}")
-    
+
     return operations[operation](a, b)
 
 
 def get_tool_schema() -> dict:
     """
-    Get the schema for available tools.
-    
-    This is what the agent sees when deciding which tool to call.
-    
+    获取可用工具的 schema。
+
+    这是 agent 在决定调用哪个工具时看到的内容。
+
     Returns:
-        Dictionary of tool names to their schemas
+        工具名称到其 schema 的字典映射
     """
     return {
         "calculator": {
@@ -61,23 +61,23 @@ def get_tool_schema() -> dict:
 
 def execute_tool(tool_name: str, arguments: dict) -> Any:
     """
-    Execute a tool by name with given arguments.
-    
+    按名称使用给定的参数执行一个工具。
+
     Args:
-        tool_name: Name of the tool to execute
-        arguments: Dictionary of arguments for the tool
-        
+        tool_name: 要执行的工具名称
+        arguments: 工具的参数字典
+
     Returns:
-        Result of the tool execution
-        
+        工具执行的结果
+
     Raises:
-        ValueError: If tool doesn't exist
+        ValueError: 如果工具不存在
     """
     tools = {
         "calculator": calculator,
     }
-    
+
     if tool_name not in tools:
         raise ValueError(f"Unknown tool: {tool_name}")
-    
+
     return tools[tool_name](**arguments)

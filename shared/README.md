@@ -1,22 +1,22 @@
-# Shared Code
+# 共享代码
 
-This folder contains small, boring helpers used by the agent.
+此文件夹包含 agent 使用的一些小巧、朴素的辅助工具。
 
-## Files
+## 文件
 
-- **llm.py** - Minimal wrapper around llama-cpp-python
-- **utils.py** - JSON parsing and text formatting helpers
-- **prompts.py** - Prompt templates that evolve across lessons
+- **llm.py** —— llama-cpp-python 的最小封装
+- **utils.py** —— JSON 解析和文本格式化辅助工具
+- **prompts.py** —— 随课程演进的提示词模板
 
-## Philosophy
+## 理念
 
-Nothing clever lives here.
+这里不存放任何取巧的东西。
 
-If something feels complex, it doesn't belong in this folder.
+如果某个东西让人感觉复杂，那它就不属于这个文件夹。
 
-These utilities exist to:
-1. Reduce repetition
-2. Keep lesson code focused
-3. Maintain consistency
+这些工具的存在是为了：
+1. 减少重复
+2. 让课程代码保持聚焦
+3. 保持一致性
 
-They are intentionally simple and well-documented.
+它们刻意做得简单且文档完善。

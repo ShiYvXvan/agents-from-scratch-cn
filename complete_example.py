@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Complete Agent Example
+完整的 Agent 示例
 
-This script demonstrates the agent using features from all 12 lessons.
-It's meant as a reference for how the pieces fit together.
+此脚本演示了使用全部 12 课中功能的 Agent。
+旨在作为各部分如何组合在一起的参考。
 """
 
 import time
@@ -11,31 +11,31 @@ from agent.agent import Agent
 
 
 def lesson_01_basic_chat():
-    """Lesson 01: Basic LLM interaction"""
+    """第 01 课：基本的 LLM 交互"""
     print("\n" + "="*50)
-    print("LESSON 01: Basic LLM Chat")
+    print("第 01 课：基本的 LLM 对话")
     print("="*50)
-    
+
     agent = Agent("models/llama-3-8b-instruct.gguf")
     response = agent.simple_generate("Explain what an AI agent is?")
-    print(f"Response: {response}")
+    print(f"响应：{response}")
 
 
 def lesson_02_with_role():
-    """Lesson 02: System prompts"""
+    """第 02 课：系统提示词"""
     print("\n" + "="*50)
-    print("LESSON 02: With System Prompt")
+    print("第 02 课：使用系统提示词")
     print("="*50)
-    
+
     agent = Agent("models/llama-3-8b-instruct.gguf")
     response = agent.generate_with_role("Explain what an AI agent is?")
-    print(f"Response: {response}")
+    print(f"响应：{response}")
 
 
 def lesson_03_structured():
-    """Lesson 03: Structured outputs"""
+    """第 03 课：结构化输出"""
     print("\n" + "="*50)
-    print("LESSON 03: Structured Output")
+    print("第 03 课：结构化输出")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
@@ -49,13 +49,13 @@ def lesson_03_structured():
         "Explain quantum computing",
         schema
     )
-    print(f"Structured result: {result}")
+    print(f"结构化结果：{result}")
 
 
 def lesson_04_decisions():
-    """Lesson 04: Decision-making"""
+    """第 04 课：决策"""
     print("\n" + "="*50)
-    print("LESSON 04: Decision Making")
+    print("第 04 课：决策")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
@@ -64,139 +64,139 @@ def lesson_04_decisions():
         "Can you summarize this article for me?",
         choices=["answer_question", "summarize_text", "translate"]
     )
-    print(f"Decision: {decision}")
+    print(f"决策：{decision}")
 
 
 def lesson_05_tools():
-    """Lesson 05: Tool calling"""
+    """第 05 课：工具调用"""
     print("\n" + "="*50)
-    print("LESSON 05: Tool Calling")
+    print("第 05 课：工具调用")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
 
     tool_call = agent.request_tool("What is 42 * 7?")
-    print(f"Tool request: {tool_call}")
+    print(f"工具请求：{tool_call}")
 
     if tool_call:
         result = agent.execute_tool_call(tool_call)
-        print(f"Tool result: {result}")
+        print(f"工具结果：{result}")
 
 
 def lesson_06_agent_loop():
-    """Lesson 06: Agent loop"""
+    """第 06 课：Agent 循环"""
     print("\n" + "="*50)
-    print("LESSON 06: Agent Loop")
+    print("第 06 课：Agent 循环")
     print("="*50)
-    
+
     agent = Agent("models/llama-3-8b-instruct.gguf")
-    
-    print("\nNote: Repetition in early iterations is expected.")
-    print("The agent refines its understanding step by step and may repeat analysis")
-    print("before converging on a clearer explanation.\n")
-    
+
+    print("\n注意：早期迭代中的重复是预期行为。")
+    print("Agent 会逐步完善其理解，在收敛到更清晰的解释之前")
+    print("可能会重复分析。\n")
+
     results = agent.run_loop("Help me understand loops", max_steps=3)
-    
+
     for i, result in enumerate(results, 1):
-        print(f"Iteration {i}:")
+        print(f"迭代 {i}：")
         action = result.get("action", "unknown")
         reason = result.get("reason", "No reason provided")
-        print(f"  Action: {action}")
-        print(f"  Reason: {reason}")
+        print(f"  操作：{action}")
+        print(f"  原因：{reason}")
         if i < len(results):
             print()
 
 
 def lesson_07_memory():
-    """Lesson 07: Memory"""
+    """第 07 课：记忆"""
     print("\n" + "="*50)
-    print("LESSON 07: Memory")
+    print("第 07 课：记忆")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
 
-    # First interaction - store name
+    # 第一次交互——存储名字
     response1 = agent.run_with_memory("My name is Alice")
     if response1 and "reply" in response1:
-        print(f"Response 1: {response1['reply']}")
+        print(f"响应 1：{response1['reply']}")
         if response1.get("save_to_memory"):
-            print(f"  → Saved to memory: {response1['save_to_memory']}")
+            print(f"  → 已保存到记忆：{response1['save_to_memory']}")
     else:
-        print(f"Response 1: {response1}")
+        print(f"响应 1：{response1}")
 
-    # Second interaction - recall name
+    # 第二次交互——回忆名字
     response2 = agent.run_with_memory("What's my name?")
     if response2 and "reply" in response2:
-        print(f"Response 2: {response2['reply']}")
+        print(f"响应 2：{response2['reply']}")
         if response2.get("save_to_memory"):
-            print(f"  → Saved to memory: {response2['save_to_memory']}")
+            print(f"  → 已保存到记忆：{response2['save_to_memory']}")
     else:
-        print(f"Response 2: {response2}")
+        print(f"响应 2：{response2}")
 
-    print(f"\nMemory contents: {agent.memory.get_all()}")
+    print(f"\n记忆内容：{agent.memory.get_all()}")
 
 
 def lesson_08_planning():
-    """Lesson 08: Planning"""
+    """第 08 课：规划"""
     print("\n" + "="*50)
-    print("LESSON 08: Planning")
+    print("第 08 课：规划")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
 
     plan = agent.create_plan("Write a blog post about AI agents")
-    print(f"Plan: {plan}")
+    print(f"计划：{plan}")
 
     if plan:
         results = agent.execute_plan(plan)
-        print(f"Execution results: {results}")
+        print(f"执行结果：{results}")
 
 
 def lesson_09_atomic_actions():
-    """Lesson 09: Atomic actions"""
+    """第 09 课：原子操作"""
     print("\n" + "="*50)
-    print("LESSON 09: Atomic Actions")
+    print("第 09 课：原子操作")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
 
-    # Convert a plan step into an atomic action
+    # 将计划步骤转换为原子操作
     step = "Write an explanation of AI agents"
     atomic_action = agent.create_atomic_action(step)
-    print(f"Step: {step}")
-    print(f"Atomic action: {atomic_action}")
+    print(f"步骤：{step}")
+    print(f"原子操作：{atomic_action}")
 
-    # Example with a step from a plan
+    # 使用计划中的步骤示例
     plan = agent.create_plan("Create a tutorial about Python")
     if plan and "steps" in plan and plan["steps"]:
         first_step = plan["steps"][0]
         atomic_action_from_plan = agent.create_atomic_action(first_step)
-        print(f"\nPlan step: {first_step}")
-        print(f"Atomic action from plan step: {atomic_action_from_plan}")
+        print(f"\n计划步骤：{first_step}")
+        print(f"来自计划步骤的原子操作：{atomic_action_from_plan}")
 
 
 def lesson_10_aot():
-    """Lesson 10: Atom of Thought"""
+    """第 10 课：Atom of Thought"""
     print("\n" + "="*50)
-    print("LESSON 10: Atom of Thought")
+    print("第 10 课：Atom of Thought")
     print("="*50)
 
     agent = Agent("models/llama-3-8b-instruct.gguf")
-    
+
     graph = agent.create_aot_plan("Research and write article")
-    print(f"AoT graph: {graph}")
-    
+    print(f"AoT 图：{graph}")
+
     if graph:
         results = agent.execute_aot_plan(graph)
-        print(f"Execution results: {results}")
+        print(f"执行结果：{results}")
 
 
 def lesson_11_evals():
-    """Lesson 11: Evals (Regression Testing)"""
+    """第 11 课：评估（回归测试）"""
     print("\n" + "="*50)
-    print("LESSON 11: Evals")
+    print("第 11 课：评估")
     print("="*50)
-    
+
     from agent.evals import AgentEval, print_eval_report
     from evals.golden_datasets import (
         STRUCTURED_OUTPUT_GOLDEN,
@@ -204,60 +204,60 @@ def lesson_11_evals():
         DECISION_GOLDEN,
         MEMORY_GOLDEN
     )
-    
+
     agent = Agent("models/llama-3-8b-instruct.gguf")
     evaluator = AgentEval(agent)
-    
-    print("\nRunning eval suites...")
-    print("(This may take a minute as it runs multiple agent calls)\n")
-    
-    # Run a subset for demo (full suite can be slow)
-    # Using first 2 cases from each suite for quick demo
+
+    print("\n正在运行评估套件...")
+    print("（这可能需要一分钟，因为它会运行多个 Agent 调用）\n")
+
+    # 为演示运行一个子集（完整套件可能会很慢）
+    # 使用每个套件中的前 2 个用例进行快速演示
     results = evaluator.run_all(
         structured_cases=STRUCTURED_OUTPUT_GOLDEN[:2],
         tool_cases=TOOL_CALL_GOLDEN[:2],
         decision_cases=DECISION_GOLDEN[:2],
         memory_cases=MEMORY_GOLDEN[:1]
     )
-    
-    # Print the report
+
+    # 打印报告
     print_eval_report(results)
-    
-    # Show how to access individual results
-    print("\nAccessing individual suite results:")
+
+    # 展示如何访问单个结果
+    print("\n访问单个套件结果：")
     for suite in results:
-        print(f"  {suite.name}: {suite.pass_rate:.0%} pass rate")
+        print(f"  {suite.name}: {suite.pass_rate:.0%} 通过率")
 
 
 def lesson_12_telemetry():
-    """Lesson 12: Telemetry (Runtime Observability)"""
+    """第 12 课：遥测（运行时可观测性）"""
     print("\n" + "="*50)
-    print("LESSON 12: Telemetry")
+    print("第 12 课：遥测")
     print("="*50)
-    
+
     from agent.telemetry import Telemetry
-    
+
     agent = Agent("models/llama-3-8b-instruct.gguf")
     telemetry = Telemetry(log_file="agent_telemetry.jsonl")
-    
-    # Clear previous telemetry for clean demo
+
+    # 清除之前的遥测数据以进行干净的演示
     telemetry.clear()
-    
-    print("\nRunning agent operations with telemetry...")
-    
-    # Start a trace for this interaction
+
+    print("\n正在运行带有遥测的 Agent 操作...")
+
+    # 为此次交互启动一个追踪
     trace_id = telemetry.start_trace()
-    print(f"Trace ID: {trace_id}")
-    
-    # Operation 1: Structured output
-    print("\n1. Structured output call...")
+    print(f"追踪 ID：{trace_id}")
+
+    # 操作 1：结构化输出
+    print("\n1. 结构化输出调用...")
     start = time.time()
     result1 = agent.generate_structured(
-        "What is Python?", 
+        "What is Python?",
         '{"answer": string, "difficulty": "beginner" | "intermediate" | "advanced"}'
     )
     duration1 = (time.time() - start) * 1000
-    
+
     telemetry.log_llm_call(
         prompt_length=150,
         response_length=len(str(result1)) if result1 else 0,
@@ -265,37 +265,37 @@ def lesson_12_telemetry():
         success=result1 is not None,
         error=None if result1 else "Failed to parse JSON"
     )
-    print(f"   Result: {result1}")
-    print(f"   Duration: {duration1:.0f}ms")
-    
-    # Operation 2: Tool call
-    print("\n2. Tool call...")
+    print(f"   结果：{result1}")
+    print(f"   耗时：{duration1:.0f}ms")
+
+    # 操作 2：工具调用
+    print("\n2. 工具调用...")
     start = time.time()
     tool_call = agent.request_tool("What is 15 * 8?")
     duration2 = (time.time() - start) * 1000
-    
+
     telemetry.log_llm_call(
         prompt_length=200,
         response_length=len(str(tool_call)) if tool_call else 0,
         duration_ms=duration2,
         success=tool_call is not None
     )
-    
+
     if tool_call:
         telemetry.log_tool_call(
             tool_name=tool_call.get("tool", "unknown"),
             arguments=tool_call.get("arguments", {}),
             result=agent.execute_tool_call(tool_call) if tool_call else None,
-            duration_ms=1.0  # Tool execution is fast
+            duration_ms=1.0  # 工具执行很快
         )
-        print(f"   Tool: {tool_call}")
-    
-    # Operation 3: Memory
-    print("\n3. Memory operation...")
+        print(f"   工具：{tool_call}")
+
+    # 操作 3：记忆
+    print("\n3. 记忆操作...")
     start = time.time()
     result3 = agent.run_with_memory("My favorite color is blue")
     duration3 = (time.time() - start) * 1000
-    
+
     telemetry.log_llm_call(
         prompt_length=300,
         response_length=len(str(result3)) if result3 else 0,
@@ -303,30 +303,30 @@ def lesson_12_telemetry():
         success=result3 is not None
     )
     telemetry.log_memory_operation("add", "favorite color is blue")
-    print(f"   Result: {result3}")
-    
-    # Print telemetry summary
+    print(f"   结果：{result3}")
+
+    # 打印遥测摘要
     telemetry.print_summary()
-    
-    # Show recent spans
-    print("\nRecent spans:")
+
+    # 显示最近的 span
+    print("\n最近的 span：")
     for span in telemetry.get_recent_spans(5):
         event = span.get("event_type", "unknown")
         duration = span.get("duration_ms", "N/A")
-        print(f"  [{event}] duration={duration}ms")
-    
-    print(f"\nTelemetry logged to: agent_telemetry.jsonl")
-    print("View with: cat agent_telemetry.jsonl | head -5")
+        print(f"  [{event}] 耗时={duration}ms")
+
+    print(f"\n遥测已记录到：agent_telemetry.jsonl")
+    print("查看方式：cat agent_telemetry.jsonl | head -5")
 
 
 def main():
-    """Run all lesson examples"""
+    """运行所有课程示例"""
     print("\n" + "#"*50)
-    print("# AI Agent Examples - All Lessons")
+    print("# AI Agent 示例——全部课程")
     print("#"*50)
-    
+
     try:
-        # Comment out lessons you want to skip
+        # 注释掉你想跳过的课程
         lesson_01_basic_chat()
         lesson_02_with_role()
         lesson_03_structured()
@@ -339,19 +339,19 @@ def main():
         lesson_10_aot()
         lesson_11_evals()
         lesson_12_telemetry()
-        
+
         print("\n" + "="*50)
-        print("All examples completed!")
+        print("所有示例已完成！")
         print("="*50)
-        
+
     except FileNotFoundError as e:
-        print(f"\n❌ Error: {e}")
-        print("\nMake sure you have:")
-        print("1. Downloaded a GGUF model")
-        print("2. Placed it in the models/ directory")
-        print("3. Updated the model path in this script")
+        print(f"\n❌ 错误：{e}")
+        print("\n请确保你已完成以下操作：")
+        print("1. 下载了 GGUF 模型")
+        print("2. 将其放置在 models/ 目录中")
+        print("3. 更新了此脚本中的模型路径")
     except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+        print(f"\n❌ 意外错误：{e}")
 
 
 if __name__ == "__main__":

@@ -1,49 +1,49 @@
-# Lesson 04  -  Decision Making with LLMs
+# 第 04 课 - 使用 LLM 做决策
 
-## What Question Are We Answering?
+## 我们在回答什么问题？
 
-**"Can the model decide what to do, not just answer?"**
+**"模型能决定做什么，而不仅仅是回答问题吗？"**
 
-This is the first moment of **agency**. Instead of responding with generated text, the model chooses actions from a finite set of options.
+这是**自主性**的第一个时刻。模型不再回复生成的文本，而是从一组有限的选项中做出选择。
 
-## What You Will Build
+## 你将构建什么
 
-A decision-making system that:
-- Presents the model with a finite set of choices
-- Forces the model to pick exactly one option
-- Validates the decision and retries on failure
-- Uses the decision to route execution
+一个决策系统，它能够：
+- 向模型呈现一组有限的选项
+- 强制模型恰好选择一个选项
+- 验证决策并在失败时重试
+- 使用决策来路由执行
 
-## New Concepts Introduced
+## 引入的新概念
 
-### 1. Decision Schemas
+### 1. 决策 Schema
 
-A **decision schema** is a finite set of choices the model must pick from. Instead of generating free text, the model selects from predefined actions like "answer_question", "summarize_text", or "translate".
+**决策 schema** 是模型必须从中选择的一组有限选项。模型不再生成自由文本，而是从预定义的动作中进行选择，比如"answer_question"、"summarize_text"或"translate"。
 
-This constrains the output space dramatically - instead of infinite possible responses, there are only a few valid options.
+这极大地约束了输出空间——与其有无限多种可能的回复，不如只有少数几个有效选项。
 
-### 2. Routing Logic
+### 2. 路由逻辑
 
-Once a decision is made, your code can **route** execution based on it. If the model chooses "summarize_text", you call the summarization function. If it chooses "translate", you call the translation function.
+一旦做出决策，你的代码可以根据决策来**路由**执行。如果模型选择了"summarize_text"，你就调用摘要函数。如果它选择了"translate"，你就调用翻译函数。
 
-This is how agents take different paths based on what they "decide" to do.
+这就是 agent 如何根据它们"决定"要做的事情走不同路径。
 
-### 3. Intent Detection
+### 3. 意图检测
 
-By framing user input as a decision problem, you're doing **intent detection**. The model analyzes what the user wants and maps it to one of your available actions.
+通过将用户输入框定为一个决策问题，你就是在做**意图检测**。模型分析用户想要什么，并将其映射到你可用的动作之一。
 
-This is simpler than trying to parse free text to understand intent.
+这比试图解析自由文本来理解意图要简单得多。
 
-## What We Are NOT Doing (Yet)
+## 我们（暂时）不做什么
 
-- No tools ([Lesson 05](05_tools.md))
-- No agent loop ([Lesson 06](06_agent_loop.md))
-- No memory ([Lesson 07](07_memory.md))
-- No planning ([Lesson 08](08_planning.md))
+- 不使用工具（[第 05 课](05_tools.md)）
+- 不使用 agent loop（[第 06 课](06_agent_loop.md)）
+- 不使用记忆（[第 07 课](07_memory.md)）
+- 不使用规划（[第 08 课](08_planning.md)）
 
-## The Code
+## 代码
 
-Look at `agent/agent.py`, see `decide()` method:
+查看 `agent/agent.py`，找到 `decide()` 方法：
 
 ```python
 def decide(self, user_input: str, choices: list[str]) -> str | None:
@@ -92,15 +92,15 @@ Response (JSON only):"""
     return None
 ```
 
-Notice we've added:
-- **Finite choice space** - The model must pick from a predefined list, not generate anything
-- **Validation** - We check that the decision is actually in the list of choices
-- **Structured output** - Using the same JSON extraction pattern from Lesson 03
-- **Retry logic** - Up to 3 attempts to get a valid decision
+注意我们添加了：
+- **有限的选项空间** - 模型必须从预定义的列表中选择，不能生成任何东西
+- **验证** - 我们检查决策是否确实在选项列表中
+- **结构化输出** - 使用与第 03 课相同的 JSON 提取模式
+- **重试逻辑** - 最多 3 次尝试以获得有效的决策
 
-## How to Run
+## 如何运行
 
-Look at `complete_example.py`, see `lesson_04_decisions()` method:
+查看 `complete_example.py`，找到 `lesson_04_decisions()` 方法：
 
 ```python
 from agent.agent import Agent
@@ -116,69 +116,69 @@ print(decision)
 # Output: "summarize_text"
 ```
 
-## Compare to Lesson 03
+## 与第 03 课对比
 
-**Lesson 03 (Structured Output):**
+**第 03 课（结构化输出）：**
 ```
 Input: "What is AI?"
 Output: {"answer": "AI is...", "confidence": "high"}
 ```
-The model generates structured data with values it creates.
+模型生成的结构化数据中包含它自己创建的值。
 
-**Lesson 04 (Decision Making):**
+**第 04 课（决策制定）：**
 ```
 Input: "Summarize this article"
 Choices: ["answer_question", "summarize_text", "translate"]
 Output: "summarize_text"
 ```
-The model selects from predefined options - no generation, just selection.
+模型从预定义的选项中选择——不是生成，只是选择。
 
-## Key Insights
+## 关键洞见
 
-### Selection vs Generation
+### 选择 vs 生成
 
-The model is no longer generating content - it's **selecting from a finite action space**. This is fundamentally different and much more predictable than free-text generation.
+模型不再生成内容——它在**从有限的动作空间中进行选择**。这与自由文本生成有着根本性的不同，并且可预测得多。
 
-### Agency Begins Here
+### 自主性从这里开始
 
-This is where the agent starts to feel "agent-like". It's not just responding - it's choosing what to do. The choices might be simple, but the pattern is important.
+这是 agent 开始有"agent 的感觉"的地方。它不再只是回复——它在选择做什么。这些选择可能很简单，但这种模式很重要。
 
-### Constrained = Reliable
+### 约束 = 可靠
 
-By limiting choices to a small, well-defined set, you make the system more reliable. The model can't hallucinate new actions - it must pick from your list.
+通过将选项限制在一个小而明确的集合中，你让系统更加可靠。模型无法幻觉出新的动作——它必须从你的列表中选择。
 
-### Validation is Critical
+### 验证至关重要
 
-Always validate that the decision is actually in your choices list. The model might return something that looks like a decision but isn't in your allowed set.
+始终验证决策是否确实在你的选项列表中。模型可能返回看起来像决策但不在你允许集合中的内容。
 
-## Common Issues
+## 常见问题
 
-**"The model returns a choice not in my list"**
-- Validate against the choices list (the code does this)
-- Make your choice names clear and unambiguous
-- Consider adding a retry with more explicit instructions
+**"模型返回了不在我列表中的选项"**
+- 对照选项列表进行验证（代码已经做了这一点）
+- 使你的选项名称清晰且无歧义
+- 考虑添加带有更明确指令的重试
 
-**"All decisions seem random"**
-- Check that your choices are semantically distinct
-- Make sure the user input actually relates to the choices
-- Lower temperature further for more deterministic selection
+**"所有决策看起来都是随机的"**
+- 检查你的选项在语义上是否不同
+- 确保用户输入确实与选项相关
+- 进一步降低 temperature 以获得更确定性的选择
 
-**"The model adds explanations"**
-- The `extract_json_from_text()` helper handles this
-- Stronger instructions help (already in the code)
-- Consider rejecting responses with extra text
+**"模型添加了解释"**
+- `extract_json_from_text()` 辅助函数可以处理这个
+- 更强的指令有助于处理（代码中已经有了）
+- 考虑拒绝带有额外文本的回复
 
-## Exercises
+## 练习
 
-1. Create a decision with 5+ choices and test different inputs
-2. Try ambiguous inputs and see which choice the model picks
-3. Add a "none_of_the_above" choice and see when it's selected
-4. Compare decisions with temperature 0.0 vs 0.5
+1. 创建一个包含 5+ 个选项的决策并测试不同的输入
+2. 尝试模糊的输入，看看模型选择哪个选项
+3. 添加一个"none_of_the_above"选项，观察它何时被选择
+4. 比较 temperature 0.0 与 0.5 时的决策
 
-## What's Next?
+## 接下来是什么？
 
-In [Lesson 05](05_tools.md), we'll introduce **tools** - capabilities the agent can request to extend beyond text generation.
+在[第 05 课](05_tools.md)中，我们将引入**工具**——agent 可以请求的能力，以超越文本生成的范围。
 
 ---
 
-**Key Takeaway:** Decisions = agency. Agents choose, not just respond. Constraining choices makes behavior predictable.
+**核心要点：** 决策 = 自主性。agent 做出选择，而不仅仅是回复。约束选项使行为变得可预测。

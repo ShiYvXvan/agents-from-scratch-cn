@@ -1,51 +1,51 @@
-# Lesson 08  -  Planning as Data (Not Thoughts)
+# 第 08 课  -  规划即数据（而非思想）
 
-## What Question Are We Answering?
+## 我们要回答什么问题？
 
-**"How can an agent solve multi-step tasks?"**
+**"Agent 如何解决多步骤任务？"**
 
-Complex tasks require multiple steps. Planning breaks down a goal into a sequence of actions that can be executed step by step.
+复杂任务需要多个步骤。规划将目标分解为一系列可以逐步执行的动作。
 
-## What You Will Build
+## 你将构建什么
 
-A planning system that:
-- Generates a step-by-step plan from a goal
-- Separates planning from execution
-- Stores plans as data structures
-- Executes plans sequentially
+一个规划系统，具备以下功能：
+- 从目标生成逐步计划
+- 将规划与执行分离
+- 将计划存储为数据结构
+- 按顺序执行计划
 
-## New Concepts Introduced
+## 引入的新概念
 
-### 1. Planning vs Execution
+### 1. 规划 vs 执行
 
-**Planning** is generating the steps needed to achieve a goal. **Execution** is actually doing those steps. By separating them, you can:
-- Inspect the plan before executing
-- Modify the plan if needed
-- Debug planning separately from execution
+**规划**是生成实现目标所需的步骤。**执行**是实际执行这些步骤。将它们分开后，你可以：
+- 在执行前检查计划
+- 在需要时修改计划
+- 独立调试规划和执行
 
-This separation is powerful - you can see what the agent "thinks" it should do before it does it.
+这种分离非常强大——你可以在 Agent "认为"它应该做的事情实际执行之前看到它。
 
-### 2. Step Ordering
+### 2. 步骤排序
 
-**Step ordering** determines the sequence of actions. Steps might depend on each other (step 2 needs step 1's output), or they might be independent.
+**步骤排序**决定了动作的顺序。步骤之间可能存在依赖关系（步骤 2 需要步骤 1 的输出），也可能是独立的。
 
-For now, we execute steps in order. Later lessons will handle dependencies more explicitly.
+目前，我们按顺序执行步骤。后面的课程将更明确地处理依赖关系。
 
-### 3. Validation
+### 3. 验证
 
-**Validation** checks plans before execution. Is the plan valid JSON? Does it have the required structure? Are the steps reasonable?
+**验证**在执行前检查计划。计划是有效的 JSON 吗？它是否具有所需的结构？步骤是否合理？
 
-Validating plans catches errors before wasting time on execution.
+验证计划能在浪费时间执行之前捕获错误。
 
-## What We Are NOT Doing (Yet)
+## 我们（目前）不做什么
 
-- No dependency handling ([Lesson 10](10_atom_of_thought.md))
-- No atomic action validation ([Lesson 09](09_atomic_actions.md))
-- No parallel execution - steps run sequentially
+- 没有依赖处理（[第 10 课](10_atom_of_thought.md)）
+- 没有原子动作验证（[第 09 课](09_atomic_actions.md)）
+- 没有并行执行——步骤按顺序运行
 
-## The Code
+## 代码
 
-Look at `agent/agent.py`, see `create_plan()` and `execute_plan()` methods:
+查看 `agent/agent.py`，参见 `create_plan()` 和 `execute_plan()` 方法：
 
 ```python
 def create_plan(self, goal: str) -> dict | None:
@@ -94,7 +94,7 @@ def execute_plan(self, plan: dict) -> list:
     return results
 ```
 
-And the planner implementation in `agent/planner.py`:
+以及 `agent/planner.py` 中的规划器实现：
 
 ```python
 def create_plan(llm: LocalLLM, goal: str) -> dict | None:
@@ -136,15 +136,15 @@ Response (JSON only):"""
     return None
 ```
 
-Notice:
-- **Structured output** - Plans are JSON data structures
-- **Validation** - We check that plans have the expected structure
-- **Retry logic** - Multiple attempts to get a valid plan
-- **Simple execution** - Steps are executed in order (actual execution logic comes later)
+注意以下几点：
+- **结构化输出**——计划是 JSON 数据结构
+- **验证**——我们检查计划是否具有预期结构
+- **重试逻辑**——多次尝试以获取有效计划
+- **简单执行**——步骤按顺序执行（实际的执行逻辑在后面课程中）
 
-## How to Run
+## 如何运行
 
-Look at `complete_example.py`, see `lesson_08_planning()` method:
+查看 `complete_example.py`，参见 `lesson_08_planning()` 方法：
 
 ```python
 from agent.agent import Agent
@@ -159,74 +159,74 @@ if plan:
     print(f"Execution results: {results}")
 ```
 
-## Compare to Lesson 07
+## 与第 07 课对比
 
-**Lesson 07 (Memory):**
+**第 07 课（记忆）：**
 ```
-User: "My name is Alice" -> Save to memory
-User: "What's my name?" -> Retrieve from memory
+用户: "我叫 Alice" -> 保存到记忆
+用户: "我叫什么名字？" -> 从记忆中检索
 ```
-Stores and retrieves facts.
+存储和检索事实。
 
-**Lesson 08 (Planning):**
+**第 08 课（规划）：**
 ```
-Goal: "Write article" -> Plan: ["Research", "Outline", "Write", "Review"]
-Plan -> Execute each step -> Results
+目标: "写文章" -> 计划: ["调研", "大纲", "撰写", "审阅"]
+计划 -> 执行每个步骤 -> 结果
 ```
-Generates and executes a sequence of steps.
+生成并执行一系列步骤。
 
-![Planning Flow](diagrams/lesson-08-planning.png)
+![规划流程](diagrams/lesson-08-planning.png)
 
-## Key Insights
+## 关键洞察
 
-### Plans Aren't Thoughts
+### 计划不是思想
 
-Plans aren't thoughts - they're **data structures**. This makes them inspectable, modifiable, and safe. You can see, edit, and validate them before execution.
+计划不是思想——它们是**数据结构**。这使得它们可检查、可修改且安全。你可以在执行前查看、编辑和验证它们。
 
-### Planning = Data Generation
+### 规划 = 数据生成
 
-Planning is not sophisticated reasoning - it's structured data generation. The model generates a list of steps, just like it generates any other structured output.
+规划不是复杂的推理——它是结构化的数据生成。模型生成一个步骤列表，就像生成任何其他结构化输出一样。
 
-### Separate Phases
+### 分离的阶段
 
-Separating planning from execution lets you:
-- Debug plans without executing
-- Modify plans before running
-- Reuse plans for similar goals
-- Test planning independently
+将规划与执行分离让你能够：
+- 在不执行的情况下调试计划
+- 在运行之前修改计划
+- 为类似目标重用计划
+- 独立测试规划
 
-### Simple Execution
+### 简单执行
 
-For now, execution is simple - just iterate through steps. Later lessons will add more sophisticated execution with dependencies and validation.
+目前，执行很简单——只是遍历步骤。后面的课程将添加更复杂的执行，包括依赖关系和验证。
 
-## Common Issues
+## 常见问题
 
-**"The plan is too vague"**
-- Make the goal more specific
-- Provide examples of good plans in the prompt
-- Consider breaking down very general goals
+**"计划太模糊"**
+- 使目标更具体
+- 在 prompt 中提供良好计划的示例
+- 考虑分解过于笼统的目标
 
-**"Steps are in wrong order"**
-- The model determines order - validate if needed
-- Consider adding dependency information
-- Review and reorder steps before execution if necessary
+**"步骤顺序错误"**
+- 模型决定顺序——如有必要请验证
+- 考虑添加依赖关系信息
+- 如有必要，在执行前检查并重新排序步骤
 
-**"Execution doesn't do anything"**
-- This lesson's execution is a placeholder
-- In practice, you'd call tools or other functions
-- The pattern is more important than the implementation
+**"执行没有做任何事情"**
+- 本课的执行是一个占位符
+- 在实践中，你会调用工具或其他函数
+- 模式比实现更重要
 
-## Exercises
+## 练习
 
-1. Generate plans for different types of goals
-2. Modify plans manually before executing
-3. Compare plans for the same goal across multiple runs
-4. Try to validate plans for completeness
+1. 为不同类型的目标生成计划
+2. 在执行前手动修改计划
+3. 比较多轮运行中同一目标的计划
+4. 尝试验证计划的完整性
 
-## What's Next?
+## 接下来是什么？
 
-In [Lesson 09](09_atomic_actions.md), we'll make execution safer by converting plan steps into **atomic actions** with validated schemas.
+在[第 09 课](09_atomic_actions.md)中，我们将通过将计划步骤转换为带有验证模式的**原子动作**，使执行更加安全。
 
 ---
 
-**Key Takeaway:** Planning = data generation, not reasoning. Plans are inspectable data structures that enable multi-step execution.
+**核心要点：** 规划 = 数据生成，而非推理。计划是可检查的数据结构，能够实现多步骤执行。

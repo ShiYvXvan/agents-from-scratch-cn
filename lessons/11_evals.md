@@ -1,69 +1,69 @@
-# Lesson 11 - Evals (Regression Testing for Agents)
+# 第 11 课 - Evals（Agent 的回归测试）
 
-## What Question Are We Answering?
+## 我们要回答什么问题？
 
-**"How do I know if my agent still works after I change something?"**
+**"当我做出更改后，如何知道我的 Agent 仍然能正常工作？"**
 
-Once you have tools, memory, and structured outputs, changing a prompt becomes risky. A small wording change can break JSON parsing. An "improvement" can make tool calls less reliable. Without evals, quality degrades silently.
+一旦你有了工具、记忆和结构化输出，更改 prompt 就变得有风险。一个小小的措辞变化就可能破坏 JSON 解析。一个"改进"可能让工具调用变得不那么可靠。没有 evals，质量会悄然下降。
 
-An eval suite is just a Python file that runs your agent and asserts things didn't break.
+一个 eval 套件只是一个 Python 文件，它运行你的 Agent 并断言一切没有被破坏。
 
-## What You Will Build
+## 你将构建什么
 
-An evaluation system that:
-- Tests prompt and JSON parsing reliability
-- Validates tool call accuracy
-- Checks memory storage and retrieval cycles
-- Catches regressions before deployment
+一个评估系统，具备以下功能：
+- 测试 prompt 和 JSON 解析的可靠性
+- 验证工具调用准确性
+- 检查记忆存储和检索循环
+- 在部署前捕获回归
 
-## New Concepts Introduced
+## 引入的新概念
 
-### 1. Eval Suites
+### 1. Eval 套件
 
-An **eval suite** is a collection of test cases that validate agent behavior. Each case has an input and an expected outcome. You run the suite after every prompt change.
+**Eval 套件**是验证 Agent 行为的测试用例集合。每个用例有一个输入和一个预期结果。你在每次更改 prompt 后运行该套件。
 
-This isn't magic - it's just running your agent with known inputs and checking the outputs.
+这并不神奇——只是用已知输入运行你的 Agent 并检查输出。
 
-### 2. Golden Datasets
+### 2. 黄金数据集
 
-A **golden dataset** is your source of truth - known-good examples that must always pass. If a golden case fails, the agent is broken (not the test).
+**黄金数据集**是你的事实来源——必须始终通过的已知良好示例。如果黄金用例失败，Agent 就坏了（而不是测试坏了）。
 
-Golden datasets are version controlled alongside your prompts. When you change a prompt, you run the golden dataset to verify nothing broke.
+黄金数据集与你的 prompt 一起受版本控制。当你更改 prompt 时，你运行黄金数据集来验证没有东西被破坏。
 
-### 3. Hard vs Soft Assertions
+### 3. 硬断言 vs 软断言
 
-**Hard assertions** must always pass:
-- JSON must be valid
-- Required fields must be present
-- Tool names must match available tools
+**硬断言**必须始终通过：
+- JSON 必须有效
+- 必需字段必须存在
+- 工具名称必须匹配可用工具
 
-**Soft assertions** should usually pass:
-- The answer is semantically correct
-- The phrasing is appropriate
-- The tool arguments are optimal
+**软断言**通常应该通过：
+- 答案在语义上是正确的
+- 措辞合适
+- 工具参数是最优的
 
-Start with hard assertions. Add soft ones later.
+从硬断言开始。软断言以后再说。
 
-## Why This Fails in the Real World
+## 为什么这在现实世界中会失败
 
-A prompt change that improves phrasing can:
-- Increase verbosity
-- Push JSON out of context window
-- Break parsing
-- ...without changing correctness
+一个改进措辞的 prompt 更改可能：
+- 增加冗长程度
+- 将 JSON 推出上下文窗口
+- 破坏解析
+- ……而不改变正确性
 
-This is why evals exist. They catch these silent failures.
+这就是 evals 存在的原因。它们能捕获这些静默的失败。
 
-## What We Are NOT Doing (Yet)
+## 我们（目前）不做什么
 
-- No runtime monitoring ([Lesson 12](12_telemetry.md))
-- No A/B testing
-- No production observability
-- No LLM-as-judge evals (too complex for now)
+- 没有运行时监控（[第 12 课](12_telemetry.md)）
+- 没有 A/B 测试
+- 没有生产可观测性
+- 没有 LLM-as-judge evals（目前太复杂）
 
-## The Code
+## 代码
 
-Look at `agent/evals.py`:
+查看 `agent/evals.py`：
 
 ```python
 from dataclasses import dataclass, field
@@ -134,15 +134,15 @@ class AgentEval:
         return suite
 ```
 
-Notice:
-- **Plain Python** - No testing framework needed
-- **Structured results** - Each result captures input, expected, actual, error
-- **Composable** - Run one suite or many
-- **Actionable** - Failures tell you exactly what went wrong
+注意以下几点：
+- **纯 Python**——不需要测试框架
+- **结构化结果**——每个结果捕获输入、预期值、实际值、错误
+- **可组合**——运行一个套件或多个套件
+- **可操作**——失败告诉你具体出了什么问题
 
-## The Golden Dataset
+## 黄金数据集
 
-Look at `evals/golden_datasets.py`:
+查看 `evals/golden_datasets.py`：
 
 ```python
 STRUCTURED_OUTPUT_GOLDEN = [
@@ -175,15 +175,15 @@ MEMORY_GOLDEN = [
 ]
 ```
 
-Notice:
-- **Multi-line schemas with examples** - Single-line schemas often confuse models
-- **Version controlled** - These live in your repo
-- **Cover edge cases** - Special characters, numbers, etc.
-- **Specific assertions** - Not "it works" but "this field exists"
+注意以下几点：
+- **带示例的多行模式**——单行模式经常让模型困惑
+- **受版本控制**——这些文件存放在你的仓库中
+- **覆盖边缘情况**——特殊字符、数字等
+- **具体的断言**——不是"它工作了"，而是"这个字段存在"
 
-## How to Run
+## 如何运行
 
-Look at `complete_example.py`, see `lesson_11_evals()` method:
+查看 `complete_example.py`，参见 `lesson_11_evals()` 方法：
 
 ```python
 from agent.agent import Agent
@@ -208,7 +208,7 @@ results = evaluator.run_all(
 print_eval_report(results)
 ```
 
-Example output:
+示例输出：
 
 ```
 ==================================================
@@ -224,7 +224,7 @@ Overall: ✓ ALL PASSED (12/12)
 ==================================================
 ```
 
-Or when something breaks:
+或者当某些测试失败时：
 
 ```
 ==================================================
@@ -242,79 +242,79 @@ Overall: ✗ 1 FAILED (11/12)
 ==================================================
 ```
 
-## What to Test
+## 应该测试什么
 
-| Component | What to Eval | Example Assertion |
+| 组件 | 要评估什么 | 示例断言 |
 | --------- | ------------ | ----------------- |
-| Structured output | JSON validity + schema contract | `parse_json(output) is not None and matches schema` |
-| Decisions | Correct routing | `decision in valid_choices` |
-| Tool calls | Correct tool + args | `tool_call["tool"] == "calculator"` |
-| Memory | Store/retrieve cycle | `agent.memory.get_all()` contains saved fact |
+| 结构化输出 | JSON 有效性 + 模式契约 | `parse_json(output) is not None and matches schema` |
+| 决策 | 正确的路由 | `decision in valid_choices` |
+| 工具调用 | 正确的工具 + 参数 | `tool_call["tool"] == "calculator"` |
+| 记忆 | 存储/检索循环 | `agent.memory.get_all()` 包含已保存的事实 |
 
-## Compare to Lesson 03
+## 与第 03 课对比
 
-**Lesson 03 (Structured Output):**
-- One-off validation during generation
-- Retry if JSON fails
-- No history
+**第 03 课（结构化输出）：**
+- 生成期间的一次性验证
+- JSON 失败时重试
+- 没有历史记录
 
-**Lesson 11 (Evals):**
-- Systematic testing across many cases
-- Track success rates over time
-- Catch regressions before deployment
+**第 11 课（Evals）：**
+- 跨多个用例的系统化测试
+- 跟踪随时间变化的成功率
+- 在部署前捕获回归
 
-## Key Insights
+## 关键洞察
 
-### Evals Are Just Assertions
+### Evals 只是断言
 
-There's no magic here. You run the agent, check the output, report pass/fail. The power is in doing this systematically.
+这里没有魔法。你运行 Agent，检查输出，报告通过/失败。其强大之处在于系统化地进行这一过程。
 
-### Golden Datasets Are Your Contract
+### 黄金数据集是你的契约
 
-When someone asks "does the agent work?", you point to the golden dataset. 100% pass rate = it works. Anything less = specific failures to fix.
+当有人问"Agent 工作吗？"时，你指向黄金数据集。100% 通过率 = 它工作了。更低的通过率 = 需要修复的具体故障。
 
-### Run Evals Before Every Change
+### 每次更改前运行 Evals
 
-The workflow:
-1. Make prompt change
-2. Run evals
-3. If any fail, fix or revert
-4. Commit
+工作流程：
+1. 做出 prompt 更改
+2. 运行 evals
+3. 如有失败，修复或回退
+4. 提交
 
-This is how you prevent quality degradation.
+这就是防止质量下降的方法。
 
-### Start Simple
+### 从简单开始
 
-You don't need 1000 test cases. Start with 5-10 golden cases per capability. Add more as you find edge cases in production.
+你不需要 1000 个测试用例。从每个功能 5-10 个黄金用例开始。随着在生产中发现边缘情况，再添加更多。
 
-## Common Issues
+## 常见问题
 
-**"Evals are too slow"**
-- Run a smaller subset for quick checks
-- Run full suite before commits
-- Consider caching model loads
+**"Evals 太慢了"**
+- 运行较小的子集进行快速检查
+- 在提交前运行完整套件
+- 考虑缓存模型加载
 
-**"Soft assertions are flaky"**
-- Start with hard assertions only
-- Add soft ones when you have enough data
-- Consider using exact match before semantic match
+**"软断言不稳定的"**
+- 只从硬断言开始
+- 当有足够数据时再添加软断言
+- 在语义匹配之前考虑使用精确匹配
 
-**"I don't know what to test"**
-- Start with the happy path
-- Add cases that broke in production
-- Cover edge cases (empty input, special chars, etc.)
+**"我不知道该测试什么"**
+- 从正常路径开始
+- 添加在生产中出错的用例
+- 覆盖边缘情况（空输入、特殊字符等）
 
-## Exercises
+## 练习
 
-1. Add a new golden case that currently fails, then fix the prompt
-2. Break a prompt intentionally and verify evals catch the regression
-3. Add an edge case (empty input, very long input, unicode)
-4. Create golden dataset for planning (Lesson 08)
+1. 添加一个当前会失败的新黄金用例，然后修复 prompt
+2. 有意破坏一个 prompt，验证 evals 能捕获回归
+3. 添加一个边缘情况（空输入、非常长的输入、unicode）
+4. 为规划（第 08 课）创建黄金数据集
 
-## What's Next?
+## 接下来是什么？
 
-In [Lesson 12](12_telemetry.md), we'll add **telemetry** - understanding what your agent is doing at runtime, not just in tests.
+在[第 12 课](12_telemetry.md)中，我们将添加 **telemetry**——理解你的 Agent 在运行时正在做什么，而不仅仅是在测试中。
 
 ---
 
-**Key Takeaway:** Evals = systematic testing. Golden datasets = your contract. Run them before every prompt change.
+**核心要点：** Evals = 系统化测试。黄金数据集 = 你的契约。在每次 prompt 更改前运行它们。
