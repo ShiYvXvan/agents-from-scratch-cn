@@ -1,5 +1,8 @@
 # AI Agents 从零开始
 
+原作者https://github.com/pguso/agents-from-scratch.git
+我偶然发现了这个ai agent使用教程，想自己学习，翻译了一份中文版本，顺便向大家分享和推荐。
+
 一个温和的、本地优先的 AI Agent 入门教程。
 
 本仓库通过从一个本地 LLM 调用开始，逐步构建**一个 Agent**，来教授 AI Agent 的实际工作原理。
